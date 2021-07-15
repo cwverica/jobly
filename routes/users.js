@@ -15,7 +15,7 @@ const userUpdateSchema = require("../schemas/userUpdate.json");
 const router = express.Router();
 
 
-/** POST / { user }  => { user, token }
+/** POST /users/ { user }  => { user, token }
  *
  * Adds a new user. This is not the registration endpoint --- instead, this is
  * only for admin users to add new users. The new user being added can be an
@@ -44,7 +44,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
 });
 
 
-/** GET / => { users: [ {username, firstName, lastName, email }, ... ] }
+/** GET /users/ => { users: [ {username, firstName, lastName, email }, ... ] }
  *
  * Returns list of all users.
  *
@@ -61,7 +61,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
 });
 
 
-/** GET /[username] => { user }
+/** GET /users/[username] => { user }
  *
  * Returns { username, firstName, lastName, isAdmin }
  *
@@ -78,7 +78,7 @@ router.get("/:username", ensureLoggedIn, async function (req, res, next) {
 });
 
 
-/** PATCH /[username] { user } => { user }
+/** PATCH /users/[username] { user } => { user }
  *
  * Data can include:
  *   { firstName, lastName, password, email }
@@ -104,7 +104,7 @@ router.patch("/:username", ensureLoggedIn, async function (req, res, next) {
 });
 
 
-/** DELETE /[username]  =>  { deleted: username }
+/** DELETE /users/[username]  =>  { deleted: username }
  *
  * Authorization required: login
  **/

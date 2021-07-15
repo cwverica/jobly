@@ -5,16 +5,18 @@ const { getDatabaseUri } = require("./config");
 
 let db;
 
+const { DB_USER, DB_PW } = require("./keys");
+
 if (process.env.NODE_ENV === "production") {
   db = new Client({
-    connectionString: getDatabaseUri(),
+    connectionString: `postgres://${DB_USER}:${DB_PW}@localhost:5432/${getDatabaseUri()}`,
     ssl: {
       rejectUnauthorized: false
     }
   });
 } else {
   db = new Client({
-    connectionString: getDatabaseUri()
+    connectionString: `postgres://${DB_USER}:${DB_PW}@localhost:5432/${getDatabaseUri()}`
   });
 }
 

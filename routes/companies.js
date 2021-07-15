@@ -15,7 +15,7 @@ const companyUpdateSchema = require("../schemas/companyUpdate.json");
 const router = new express.Router();
 
 
-/** POST / { company } =>  { company }
+/** POST /companies/ { company } =>  { company }
  *
  * company should be { handle, name, description, numEmployees, logoUrl }
  *
@@ -39,7 +39,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
-/** GET /  =>
+/** GET /companies/  =>
  *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
  *
  * Can filter on provided search filters:
@@ -59,7 +59,7 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-/** GET /[handle]  =>  { company }
+/** GET /companies/[handle]  =>  { company }
  *
  *  Company is { handle, name, description, numEmployees, logoUrl, jobs }
  *   where jobs is [{ id, title, salary, equity }, ...]
@@ -76,7 +76,7 @@ router.get("/:handle", async function (req, res, next) {
   }
 });
 
-/** PATCH /[handle] { fld1, fld2, ... } => { company }
+/** PATCH /companies/[handle] { fld1, fld2, ... } => { company }
  *
  * Patches company data.
  *
@@ -102,7 +102,7 @@ router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
-/** DELETE /[handle]  =>  { deleted: handle }
+/** DELETE /companies/[handle]  =>  { deleted: handle }
  *
  * Authorization: login
  */
