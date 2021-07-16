@@ -2,8 +2,6 @@
 
 const request = require("supertest");
 
-const { UnauthorizedError, BadRequestError } = require("../expressError");
-
 const db = require("../db");
 const app = require("../app");
 
