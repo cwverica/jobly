@@ -55,7 +55,7 @@ router.get("/", async function (req, res, next) {
     const filters = {};
     filters.minEmployees = parseInt(req.query.minEmployees) || null;
     filters.maxEmployees = parseInt(req.query.maxEmployees) || null;
-    if (req.query.nameLike) { filters.nameLike = req.query.nameLike.toLowerCase() };
+    if (req.query.nameLike) filters.nameLike = req.query.nameLike.toLowerCase();
 
     if ((filters.minEmployees && filters.maxEmployees) && (filters.minEmployees > filters.maxEmployees)) {
       throw new BadRequestError("minEmployees must be less than or equal to maxEmployees");
