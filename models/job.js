@@ -95,15 +95,28 @@ class Job {
             `SELECT id, 
                     title, 
                     salary, 
-                    equity, 
-                    company_handle AS "companyHandle"
+                    equity,
+                    company_handle as "companyHandle"
            FROM jobs
            WHERE id = $1`,
             [id]);
 
-        const job = jobRes.rows[0] ? jobRes.rows[0] : null;
-
+        const job = jobRes.rows[0];
         if (!job) throw new NotFoundError(`No job: ${id}`); // TODO: Not throwing error
+
+        const companyRes = await db.query(
+            `SELECT handle,
+                            name,
+                            description,
+                            num_employees AS "numEmployees",
+                            logo_url AS "logoUrl"
+                     FROM companies
+                     WHERE handle = $1`,
+            [job.companyHandle]);
+
+        job.company = companyRes.rows[0]
+
+        delete job.companyHandle;
 
         return job;
     }
@@ -139,7 +152,7 @@ class Job {
         const result = await db.query(querySql, [...values, id]);
         const job = result.rows[0];
 
-        if (!job.id) throw new NotFoundError(`No job: ${id}`); //TODO: Not throwing error
+        if (!job) throw new NotFoundError(`No job: ${id}`); //TODO: Not throwing error
 
         return job;
     }
@@ -158,7 +171,7 @@ class Job {
             [id]);
         const job = result.rows[0];
 
-        if (!job.id) throw new NotFoundError(`No job: ${id}`); //TODO: Not throwing error
+        if (!job) throw new NotFoundError(`No job: ${id}`); //TODO: Not throwing error
     }
 }
 
