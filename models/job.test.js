@@ -37,11 +37,9 @@ describe("create", function () {
              WHERE title = 'NJ1'`);
         expect(result.rows).toEqual([
             {
-                id: expect.any(Number),
-                title: "NJ1",
-                salary: 50000,
+                ...newJob,
                 equity: "0.45",
-                companyHandle: "c3"
+                id: expect.any(Number)
             },
         ]);
     });
