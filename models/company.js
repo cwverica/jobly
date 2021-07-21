@@ -3,6 +3,7 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const { filterResults } = require("../helpers/filter");
 
 /** Related functions for companies. */
 
@@ -49,8 +50,7 @@ class Company {
    * Accepts an object with a list of filters as a parameter. Will filter the 
    * results based on provided filter properties.
    * 
-   * Can be called without being passed an object, or it can be passed an empty
-   *  object.
+   * It can be passed an empty object if no filtering is desired.
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
@@ -66,20 +66,7 @@ class Company {
            ORDER BY name`);
 
     let companies = companiesRes.rows;
-
-    if (filters) {
-      companies = filters.minEmployees ?
-        companies.filter(comp => comp.numEmployees >= filters.minEmployees) :
-        companies;
-
-      companies = filters.maxEmployees ?
-        companies.filter(comp => comp.numEmployees <= filters.maxEmployees) :
-        companies;
-
-      companies = filters.nameLike ?
-        companies.filter(comp => comp.name.toLowerCase().includes(filters.nameLike)) :
-        companies;
-    }
+    companies = filters ? filterResults(companies, filters) : companies;
 
     return companies;
   }
@@ -103,9 +90,23 @@ class Company {
            WHERE handle = $1`,
       [handle]);
 
+    const jobRes = await db.query(
+      `SELECT id,
+                title,
+                salary, 
+                equity, 
+                company_handle AS "companyHandle"
+            FROM jobs
+            WHERE company_handle = $1`,
+      [handle]);
+
+
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+
+    company.jobs = jobRes.rows;
+
 
     return company;
   }
