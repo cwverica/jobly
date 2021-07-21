@@ -3,6 +3,7 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const { filterResults } = require("../helpers/filter");
 
 /** Related functions for jobs. */
 
@@ -48,8 +49,7 @@ class Job {
      * Accepts an object with a list of filters as a parameter. Will filter the 
      * results based on provided filter properties.
      * 
-     * Can be called without being passed an object, or it can be passed an empty
-     *  object.
+     * It can be passed an empty object if no filtering is desired.
      *
      * Returns [{ id, title, salary, equity, companyHandle }, ...]
      * */
@@ -65,20 +65,7 @@ class Job {
            ORDER BY title`);
 
         let jobs = jobsRes.rows;
-
-        if (filters) {
-            jobs = filters.title ?
-                jobs.filter(job => job.title.toLowerCase().includes(filters.title)) :
-                jobs;
-
-            jobs = filters.minSalary ?
-                jobs.filter(job => job.salary >= filters.minSalary) :
-                jobs;
-
-            jobs = filters.hasEquity ?
-                jobs.filter(job => (job.equity && job.equity > 0)) :
-                jobs;
-        }
+        jobs = filters ? filterResults(jobs, filters) : jobs;
 
         return jobs;
     }

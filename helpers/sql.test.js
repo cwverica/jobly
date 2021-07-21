@@ -1,7 +1,7 @@
-const { sqlForPartialUpdate } = require('./sql')
+const { sqlForPartialUpdate } = require('./sql');
 const { BadRequestError } = require("../expressError");
 
-describe("sqlForPartialIpdate", function () {
+describe("sqlForPartialUpdate", function () {
     test("works: given a few columns", function () {
         const testData = {
             firstName: "Johnny",
