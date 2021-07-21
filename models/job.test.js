@@ -122,7 +122,7 @@ describe("get", function () {
 
     test("not found if no such job", async function () {
         try {
-            await Job.get("nope");
+            await Job.get("0");
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();
@@ -203,7 +203,7 @@ describe("update", function () {
 
     test("not found if no such job", async function () {
         try {
-            await Job.update("nope", updateData);
+            await Job.update("0", updateData);
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();
@@ -243,9 +243,9 @@ describe("remove", function () {
         expect(res.rows.length).toEqual(0);
     });
 
-    test("not found if no such company", async function () {
+    test("not found if no such job", async function () {
         try {
-            await Job.remove("nope");
+            await Job.remove("0");
             fail();
         } catch (err) {
             expect(err instanceof NotFoundError).toBeTruthy();

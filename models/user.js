@@ -136,8 +136,20 @@ class User {
     );
 
     const user = userRes.rows[0];
-
     if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    const jobRes = await db.query(
+      `SELECT job_id
+       FROM applications
+       WHERE username=$1`,
+      [username]
+    );
+
+    const jobs = [];
+    jobRes.rows.forEach((r) => jobs.push(r.job_id))
+
+    user.jobs = jobs;
+
 
     return user;
   }
@@ -193,7 +205,7 @@ class User {
   /** Delete given user from database; returns undefined. */
 
   static async remove(username) {
-    let result = await db.query(
+    const result = await db.query(
       `DELETE
            FROM users
            WHERE username = $1
@@ -203,6 +215,30 @@ class User {
     const user = result.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+  }
+
+  /** Apply to a job (id supplied) for a given user */
+
+  static async apply(username, jobID) {
+    await User.get(username);
+    const job = await db.query(
+      `SELECT title
+        FROM jobs
+        WHERE id=$1`,
+      [jobID]);
+
+    if (!job.rows[0]) throw new NotFoundError(`No job: ${jobID}`);
+
+    const result = await db.query(
+      `INSERT 
+        INTO applications
+        (username, job_id)
+        VALUES ($1, $2)
+        RETURNING username, job_id AS "jobID"`,
+      [username, jobID]
+    );
+
+    return result.rows[0];
   }
 
 }

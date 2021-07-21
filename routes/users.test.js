@@ -199,6 +199,7 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
+        jobs: []
       },
     });
   });
@@ -214,6 +215,7 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
+        jobs: []
       },
     });
   });
@@ -373,5 +375,80 @@ describe("DELETE /users/:username", function () {
       .delete(`/users/nope`)
       .set("authorization", `Bearer ${a1Token}`);
     expect(resp.statusCode).toEqual(404);
+  });
+});
+
+/****************************** POST /users/:username/jobs/:id */
+
+describe("POST /users/:username/jobs/:id", function () {
+  test("works for admin", async function () {
+    const jobRes = await db.query(
+      `SELECT id, title
+        FROM jobs
+        WHERE title='J1'`
+    );
+    const jobID = jobRes.rows[0].id;
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${jobID}`)
+      .set("authorization", `Bearer ${a1Token}`);
+    expect(resp.body).toEqual({ applied: `${jobID}` });
+  });
+
+  test("works for self", async function () {
+    const jobRes = await db.query(
+      `SELECT id, title
+        FROM jobs
+        WHERE title='J1'`
+    );
+    const jobID = jobRes.rows[0].id;
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${jobID}`)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.body).toEqual({ applied: `${jobID}` });
+  });
+
+  test("unauth for different user", async function () {
+    const jobRes = await db.query(
+      `SELECT id, title
+        FROM jobs
+        WHERE title='J1'`
+    );
+    const jobID = jobRes.rows[0].id;
+    const resp = await request(app)
+      .post(`/users/u2/jobs/${jobID}`)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("unauth for anon", async function () {
+    const jobRes = await db.query(
+      `SELECT id, title
+        FROM jobs
+        WHERE title='J1'`
+    );
+    const jobID = jobRes.rows[0].id;
+    const resp = await request(app)
+      .post(`/users/u2/jobs/${jobID}`);
+    expect(resp.statusCode).toEqual(401);
+  });
+
+  test("not found if bad user", async function () {
+    const jobRes = await db.query(
+      `SELECT id, title
+        FROM jobs
+        WHERE title='J1'`
+    );
+    const jobID = jobRes.rows[0].id;
+    const resp = await request(app)
+      .post(`/users/u5/jobs/${jobID}`)
+      .set("authorization", `Bearer ${a1Token}`);
+    expect(resp.statusCode).toBe(404);
+  });
+
+  test("not found if bad jobID", async function () {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/0`)
+      .set("authorization", `Bearer ${a1Token}`);
+    expect(resp.statusCode).toBe(404);
   });
 });

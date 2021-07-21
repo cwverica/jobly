@@ -196,7 +196,7 @@ describe("GET /jobs/:id", function () {
     });
 
     test("not found for no such job", async function () {
-        const resp = await request(app).get(`/jobs/nope`);
+        const resp = await request(app).get(`/jobs/0`);
         expect(resp.statusCode).toEqual(404);
     });
 });
@@ -257,7 +257,7 @@ describe("PATCH /jobs/:id", function () {
 
     test("not found on no such job", async function () {
         const resp = await request(app)
-            .patch(`/jobs/nope`)
+            .patch(`/jobs/0`)
             .send({ title: "new nope" })
             .set("authorization", `Bearer ${a1Token}`);
         expect(resp.statusCode).toEqual(404);
@@ -325,7 +325,7 @@ describe("DELETE /jobs/:id", function () {
 
     test("not found for no such job", async function () {
         const resp = await request(app)
-            .delete(`/jobs/nope`)
+            .delete(`/jobs/0`)
             .set("authorization", `Bearer ${a1Token}`);
         expect(resp.statusCode).toEqual(404);
     });
