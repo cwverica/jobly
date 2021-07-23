@@ -55,6 +55,10 @@ describe("filterResults", function () {
         minSalary: 35000
     }
 
+    const fakeFilters = {
+        hours: 14
+    }
+
     test("works given a few results and a filter", function () {
         let results = filterResults(compResults, compFilters1);
         expect(results).toEqual([
@@ -103,4 +107,9 @@ describe("filterResults", function () {
         const results = filterResults(jobResults, {});
         expect(results).toEqual(jobResults);
     });
+
+    test("unchanged for unrecognized filters", function () {
+        const results = filterResults(jobResults, fakeFilters);
+        expect(results).toEqual(jobResults);
+    })
 });
